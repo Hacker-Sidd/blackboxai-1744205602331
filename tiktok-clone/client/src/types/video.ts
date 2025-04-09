@@ -14,7 +14,7 @@ export interface VideoComment {
 export interface Video {
   _id: string;
   userId: string;
-  user: {
+  user?: {
     _id: string;
     username: string;
     avatar?: string;
