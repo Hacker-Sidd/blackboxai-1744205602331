@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-tiktok-light text-tiktok-text;
+  font-family: 'Proxima Nova', Arial, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-tiktok-gray;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-tiktok rounded-full;
+}
