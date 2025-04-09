@@ -44,15 +44,19 @@ const VideoFeed: React.FC<VideoFeedProps> = () => {
           </div>
           <div className="p-3">
             <div className="flex items-start space-x-2">
-              <img 
-                src={video.user?.avatar || '/default-avatar.png'} 
-                alt={video.user?.username}
-                className="w-8 h-8 rounded-full"
-              />
-              <div>
-                <h3 className="font-medium text-sm line-clamp-2">{video.title}</h3>
-                <p className="text-gray-500 text-xs">{video.user?.username}</p>
-              </div>
+              {video.user && (
+                <>
+                  <img 
+                    src={video.user.avatar || '/default-avatar.png'} 
+                    alt={video.user.username}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <div>
+                    <h3 className="font-medium text-sm line-clamp-2">{video.title}</h3>
+                    <p className="text-gray-500 text-xs">{video.user.username}</p>
+                  </div>
+                </>
+              )}
             </div>
             <div className="flex justify-between mt-2 text-xs text-gray-500">
               <span>{video.views} views</span>
