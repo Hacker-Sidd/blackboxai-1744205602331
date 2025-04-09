@@ -1,7 +1,7 @@
 import React from 'react';
-import { Video } from '../types/video';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { fetchVideos } from '../features/videos/videoSlice';
+import { fetchVideos, selectCurrentVideo } from '../features/videos/videoSlice';
+import type { Video } from '../types/video';
 
 interface VideoFeedProps {
   videos?: Video[];
@@ -9,24 +9,60 @@ interface VideoFeedProps {
 
 const VideoFeed: React.FC<VideoFeedProps> = () => {
   const dispatch = useAppDispatch();
-  const { videos, status, error } = useAppSelector(state => state.videos);
+  const { videos, status, error } = useAppSelector((state) => ({
+    videos: state.videos.videos,
+    status: state.videos.status,
+    error: state.videos.error
+  }));
 
   React.useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop !== 
+        document.documentElement.offsetHeight || 
+        status !== 'idle'
+      ) {
+        return;
+      }
+      dispatch(fetchVideos());
+    };
+
     if (status === 'idle') {
       dispatch(fetchVideos());
     }
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [status, dispatch]);
 
-  if (status === 'loading') {
+  if (status === 'loading' && videos.length === 0) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   if (status === 'failed') {
-    return <div className="text-red-500 text-center p-4">Error: {error}</div>;
+    return (
+      <div className="text-red-500 text-center p-4">
+        Error loading videos: {error}
+        <button 
+          onClick={() => dispatch(fetchVideos())}
+          className="ml-4 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (videos.length === 0) {
+    return (
+      <div className="text-center p-8 text-gray-500">
+        No videos found. Be the first to upload!
+      </div>
+    );
   }
 
   return (
@@ -65,6 +101,11 @@ const VideoFeed: React.FC<VideoFeedProps> = () => {
           </div>
         </div>
       ))}
+      {status === 'loading' && videos.length > 0 && (
+        <div className="col-span-full flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      )}
     </div>
   );
 };
